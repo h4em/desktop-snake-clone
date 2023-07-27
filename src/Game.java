@@ -1,26 +1,21 @@
-import java.util.*;
 import java.util.Random;
-public class Game extends Thread {
+
+public class Game extends Thread implements GameInterface {
     private boolean gameOver;
     private int[][] gameBoard;
-    private List<Player> leadingPlayers;
-    private Player player;
-    private int currScore;
-    private int snakeDirection;
-    private Queue<int[]> snakeSegments;
-
-    //kolekcja listenerow
+    private int score;
+    private Snake snake;
+    private Leaderboard leaderboard;
 
     public Game() {
         gameOver = false;
-        currScore = 0;
-
-        leadingPlayers = new LinkedList<>();
-        snakeSegments = new LinkedList<>();
-        snakeListeners = new LinkedList<>();
+        score = 0;
 
         initBoard();
-        initSnake();
+
+        snake = new Snake();
+        snake.initSnake(new int[] {12, 5}, new int[] {12,4});
+        snake.setBoardBounds(gameBoard.length, gameBoard[0].length);
 
         start();
     }
@@ -30,7 +25,7 @@ public class Game extends Thread {
         while(!gameOver) {
             synchronized (this) {
                 try {
-                    if(snakeDirection == 0) {
+                    if(!snake.hasStarted()) {
                         this.wait();
                     }
                 } catch(InterruptedException e) {
@@ -41,164 +36,52 @@ public class Game extends Thread {
             tick();
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(90);
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public int[][] getGameBoard() {
-        return gameBoard;
+    private void tick() {
+        if(snake.move()) {
+            takeField(snake.getHead());
+            fireCellUpdated(makeCell(snake.getHead()));
+        } else {
+            gameOver();
+        }
+
+        if(!checkForFruit()) {
+            spawnNewFruit();
+            fireCellUpdated(makeCell(getFieldOfFruit()));
+            fireScoreUpdated(++score);
+        } else {
+            freeField(snake.getTail());
+            fireCellUpdated(makeCell(snake.getTail()));
+            snake.removeTail();
+        }
     }
 
     private void gameOver() {
         this.gameOver = true;
-        //TODO: zapis binarny tutaj, moze pytac czy jeszcze raz, wtedy czy jest nowy nickname;
+
+        leaderboard = new Leaderboard();
+
+        FileManager fm = new FileManager();
+        this.leaderboard.setPlayerList(fm.readPlayers());
+        fm.savePlayers(this.leaderboard.getPlayerList());
+
+        fireGameEnded();
     }
 
-    private void tick() {
-        moveSnake();
-        if(!checkForFruit()) {
-            currScore++;
-            spawnNewFruit();
+    @Override
+    public synchronized void setSnakeDirection(int direction) {
+        if(snake.directionChangeAllowed(direction)) {
+            if(!snake.hasStarted()) {
+                this.notify();
+            }
+            snake.setDirection(direction);
         }
-    }
-
-    //TODO: brakuje tego illegal move o 180, tutaj jak dasz cos takiego to jest traktowane jako kolizja ze soba
-    //to gdzies gdzie nasluchuje keypressa, jezeli nowy keypress 180 stopni od starego to nie zmieniaj i tyle chyba
-    private void moveSnake() {
-        boolean ateFruit = false;
-        int[] head = ((LinkedList<int[]>) snakeSegments).getLast();
-        int[] newHead = new int[2];
-
-        switch(snakeDirection) {
-            //east
-            case 1: {
-                newHead = new int[]{head[0], head[1] + 1};
-                break;
-            }
-
-            //south
-            case 2: {
-                newHead = new int[] {head[0] + 1, head[1]};
-                break;
-            }
-
-            //west
-            case 3: {
-                newHead = new int[] {head[0], head[1] - 1};
-                break;
-            }
-
-            //north
-            case 4: {
-                newHead = new int[] {head[0] - 1, head[1]};
-                break;
-            }
-            default:
-                break;
-        }
-
-        //kolizja
-        if(wallCollision(newHead) || snakeCollision(newHead)) {
-            gameOver();
-            return;
-        }
-
-        if(gameBoard[newHead[0]][newHead[1]] == 9)
-            ateFruit = true;
-
-        gameBoard[head[0]][head[1]] = 2;
-        gameBoard[newHead[0]][newHead[1]] = 1;
-
-        snakeSegments.add(newHead);
-
-        fireBoardUpdated();
-
-        if(!ateFruit) {
-            int tail[] = snakeSegments.poll();
-            gameBoard[tail[0]][tail[1]] = 0;
-        }
-    }
-
-    private List<SnakeListener> snakeListeners;
-
-    public void addSnakeListener(SnakeListener sl){
-        this.snakeListeners.add(sl);
-    }
-
-    private ScoreListener sl;
-    public void addScoreListener(ScoreListener sl) {this.sl = sl;}
-
-
-    private void fireBoardUpdated(){
-        for(SnakeListener sl : snakeListeners)
-            sl.snakeMoved(new SnakeEvent(this));
-    }
-
-    public synchronized void setSnakeDirection(int newDirection) {
-        if(snakeDirection == 0) {
-            this.notify();
-        }
-        if(directionChangeAllowed(newDirection)) {
-            this.snakeDirection = newDirection; //czy to tez nie musi byc synchronized?
-        }
-    }
-
-    private boolean directionChangeAllowed(int newDirection) {
-        switch(snakeDirection) {
-            case 1: {
-                if(newDirection == 3)
-                    return false;
-                break;
-            }
-            case 2: {
-                if(newDirection == 4)
-                    return false;
-                break;
-            }
-            case 3: {
-                if(newDirection == 1)
-                    return false;
-                break;
-            }
-            case 4: {
-                if(newDirection == 2)
-                    return false;
-                break;
-            }
-            default: break;
-        }
-        return true;
-    }
-    private boolean snakeCollision(int[] newHead) {
-        return (gameBoard[newHead[0]][newHead[1]] == 1 || gameBoard[newHead[0]][newHead[1]] == 2);
-    }
-
-    private boolean wallCollision(int[] newHead) {
-        if(newHead[0] < 0 || newHead[1] < 0)
-            return true;
-        if(newHead[0] > 24 || newHead[1] > 15)
-            return true;
-        return false;
-    }
-
-    private void initSnake() {
-        snakeDirection = 0;
-        //tyl
-        snakeSegments.add(new int[] {12, 4});
-        //glowa
-        snakeSegments.add(new int[] {12, 5});
-    }
-
-    private void initBoard() {
-        gameBoard = new int[25][16];
-
-        gameBoard[12][4] = 2;
-        gameBoard[12][5] = 1;
-
-        gameBoard[12][10] = 9;
     }
 
     private boolean checkForFruit() {
@@ -210,14 +93,88 @@ public class Game extends Thread {
         return false;
     }
 
+    private int[] getFieldOfFruit() {
+        int[] res = new int[2];
+        for(int i = 0; i < gameBoard.length; i++) {
+            for(int j = 0; j < gameBoard[i].length; j++) {
+                if(gameBoard[i][j] == 9) {
+                    res[0] = i;
+                    res[1] = j;
+                }
+            }
+        }
+        return res;
+    }
+
     private void spawnNewFruit() {
         Random random = new Random();
-        int row = random.nextInt(25);
-        int col = random.nextInt(16);
-        while(gameBoard[row][col] == 1 || gameBoard[row][col] == 2) {
-            row = random.nextInt(25);
-            col = random.nextInt(16);
+        int row = random.nextInt(gameBoard.length);
+        int col = random.nextInt(gameBoard[0].length);
+        while(gameBoard[row][col] == 1) {
+            row = random.nextInt(gameBoard.length);
+            col = random.nextInt(gameBoard[0].length);
         }
         gameBoard[row][col] = 9;
+    }
+
+    private void takeField(int[] field) {
+        gameBoard[field[0]][field[1]] = 1;
+    }
+
+    private void freeField(int[] field) {
+        gameBoard[field[0]][field[1]] = 0;
+    }
+
+    private void initBoard() {
+        gameBoard = new int[25][16];
+
+        gameBoard[12][4] = 1;
+        gameBoard[12][5] = 1;
+
+        gameBoard[12][10] = 9;
+    }
+
+    private GameStatusListener gameStatusListener;
+
+    @Override
+    public void setGameStatusListener(GameStatusListener gl) {
+        this.gameStatusListener = gl;
+    }
+
+    private void fireGameEnded() {
+        gameStatusListener.gameEnded();
+    }
+
+    private int[] makeCell(int[] field) {
+        int[] res = new int[3];
+        res[0] = field[0];
+        res[1] = field[1];
+        res[2] = gameBoard[field[0]][field[1]];
+        return res;
+    }
+
+    private CellListener cellListener;
+    @Override
+    public void setCellListener(CellListener cl) {
+        this.cellListener = cl;
+
+        fireCellUpdated(makeCell(new int[] {12,4}));
+        fireCellUpdated(makeCell(new int[] {12,5}));
+        fireCellUpdated(makeCell(new int[] {12,10}));
+    }
+
+    private void fireCellUpdated(int[] cell) {
+        cellListener.cellValueUpdated(new CellEvent(cell));
+    }
+
+    private ScoreListener playerListener;
+    @Override
+    public void setPlayerListener(ScoreListener pl) {this.playerListener = pl;}
+    private void fireScoreUpdated(int score){
+        playerListener.scoreUpdated(score);
+    }
+    @Override
+    public Leaderboard getLeaderboard() {
+        return this.leaderboard;
     }
 }

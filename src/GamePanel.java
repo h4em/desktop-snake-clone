@@ -1,33 +1,20 @@
-import event.GameEvent;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
-public class GamePanel extends JPanel implements SnakeListener {
-    private JTable gameTable;
-    private JPanel playerDetailsPanel;
-    private JPanel gameTablePanel;
-
-    @Override
-    public void snakeMoved(SnakeEvent snakeEvent) {
-        this.revalidate();
-        this.repaint();
-    }
-
-    public GamePanel(Game game) {
+public class GamePanel extends JPanel {
+    public GamePanel(GameInterface game) {
         this.setLayout(new GridBagLayout());
-        //binding
-        game.addSnakeListener(this);
 
-        playerDetailsPanel = new PlayerDetailsPanel();
-        gameTable = new GameTable(new SnakeGameModel(game.getGameBoard()));//? to chyba nie powinno tu byc
+        JPanel playerDetailsPanel = new ScorePanel();
+        game.setPlayerListener((ScoreListener) playerDetailsPanel);
+
+        JTable gameTable = new GameTable(new SnakeGameModel());
+        game.setCellListener((CellListener) gameTable);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
         this.add(playerDetailsPanel, gbc);
 
@@ -35,7 +22,7 @@ public class GamePanel extends JPanel implements SnakeListener {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0; //kolumny sie nie resizuja
+        gbc.weightx = 0;
         gbc.weighty = 0;
 
         this.add(gameTable, gbc);

@@ -7,14 +7,17 @@ public class CellRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Component rendererComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        int cellValue =  Integer.parseInt((String)value);
+        int cellValue = (int) value;
         if(cellValue == 0) {
-            rendererComponent.setBackground(Color.WHITE);
+            rendererComponent.setBackground(new Color(208, 208, 208));
         } else if(cellValue == 9) {
-            rendererComponent.setBackground(Color.RED);
+            rendererComponent.setBackground(new Color(159, 5, 5));
         } else {
-            rendererComponent.setBackground(Color.GREEN);
+            rendererComponent.setBackground(new Color(5, 159, 5));
         }
+
+        rendererComponent.setForeground(rendererComponent.getBackground());
+
         return rendererComponent;
     }
 }

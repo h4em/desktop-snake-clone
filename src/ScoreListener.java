@@ -1,4 +1,3 @@
 public interface ScoreListener {
-    void scoreChanged();
-
+    void scoreUpdated(int newScore);
 }

@@ -3,13 +3,18 @@ import javax.swing.table.AbstractTableModel;
 public class SnakeGameModel extends AbstractTableModel {
     int[][] gameBoard;
 
-    public SnakeGameModel(int[][] gameBoard) {
-        this.gameBoard = gameBoard;
+    public SnakeGameModel() {
+        this.gameBoard = new int[25][16];
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return Integer.toString(gameBoard[rowIndex][columnIndex]);
+        return gameBoard[rowIndex][columnIndex];
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        gameBoard[rowIndex][columnIndex] = (int) aValue;
     }
 
     @Override

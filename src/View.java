@@ -4,15 +4,21 @@ import java.awt.event.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-public class View extends JFrame {
-    public View(Game game) {
-        this.setTitle("S28546Projekt04");
-        this.setVisible(true);
-        this.setSize(new Dimension(1280,960));
+public class View extends JFrame implements GameStatusListener {
+    private GameInterface game;
+    public View(GameInterface game) {
+        this.setTitle("desktop-snake-clone");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
         this.setFocusable(true);
 
+        this.game = game;
+
+        game.setGameStatusListener(this);
+
+        this.getContentPane().add(new GamePanel(game), BorderLayout.CENTER);
+
+        //TODO: to jest za bardzo crude, refactor
         KeyAdapter keyAdapter = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -29,31 +35,34 @@ public class View extends JFrame {
             }
         };
 
-        //musi byc inaczej nie dzialalo, jakby jtable pochlanial kazdy input
-        FocusListener focusListener = new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                View.this.addKeyListener(keyAdapter);
+        this.addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                  View.this.addKeyListener(keyAdapter);
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                  View.this.removeKeyListener(keyAdapter);
+                }
             }
+        );
 
-            @Override
-            public void focusLost(FocusEvent e) {
-                View.this.removeKeyListener(keyAdapter);
-            }
-        };
+        this.pack();
 
-        this.addFocusListener(focusListener);
+        this.centerOnScreen();
+    }
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(new GamePanel(game), BorderLayout.CENTER);
-        mainPanel.add(new LeaderboardPanel(), BorderLayout.EAST); //tutaj playersow
+    private void centerOnScreen() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int centerX = (screenSize.width - this.getWidth()) / 2;
+        int centerY = (screenSize.height - this.getHeight()) / 2;
+        this.setLocation(centerX, centerY - 30);
+    }
 
-        //jeszcze popup z playerem;
-        this.getContentPane().add(mainPanel);
+    @Override
+    public void gameEnded() {
+        ;
     }
 }
 
-//obecny gracz nickname
-//obecne punkty to moze byc po lewej nad tabela
-//leaderboardsy po prawej lista -> czy to tez nie bedzie tabela?
-//glowna tabela gry
