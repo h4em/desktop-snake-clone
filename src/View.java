@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+
 public class View extends JFrame implements GameStatusListener {
     private GameInterface game;
     public View(GameInterface game) {

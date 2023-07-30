@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
@@ -35,6 +36,10 @@ public class ScorePanel extends JPanel implements ScoreListener {
         highscoreField.setEditable(false);
         highscoreField.setBorder(BorderFactory.createEmptyBorder());
         this.add(highscoreField, gbc);
+
+        this.setColors();
+
+        this.setBorder();
     }
 
     //TODO: ten int newScore jest zly nie?
@@ -46,5 +51,18 @@ public class ScorePanel extends JPanel implements ScoreListener {
     @Override
     public void highscoreUpdated(int newScore) {
         ;
+    }
+
+    private void setBorder() {
+        Border border = BorderFactory.createMatteBorder(0,0, 1, 0, Color.white);
+        this.setBorder(border);
+    }
+
+    private void setColors() {
+        Color backgroundColor = new Color(208, 208, 208);
+
+        this.setBackground(backgroundColor);
+        this.highscoreField.setBackground(backgroundColor);
+        this.scoreField.setBackground(backgroundColor);
     }
 }

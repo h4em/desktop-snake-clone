@@ -6,9 +6,6 @@ public class Game extends Thread implements GameInterface {
     private int score;
     private Snake snake;
     public Game() {
-        gameOver = false;
-        score = 0;
-
         initBoard();
 
         snake = new Snake();
@@ -161,10 +158,10 @@ public class Game extends Thread implements GameInterface {
         cellListener.cellValueUpdated(new CellEvent(cell));
     }
 
-    private ScoreListener playerListener;
+    private ScoreListener scoreListener;
     @Override
-    public void setPlayerListener(ScoreListener pl) {this.playerListener = pl;}
+    public void setScoreListener(ScoreListener sl) {this.scoreListener = sl;}
     private void fireScoreUpdated(int score){
-        playerListener.scoreUpdated(score);
+        scoreListener.scoreUpdated(score);
     }
 }

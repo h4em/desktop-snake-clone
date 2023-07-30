@@ -4,7 +4,7 @@ public interface GameInterface {
 
     void setGameStatusListener(GameStatusListener gl);
 
-    void setPlayerListener(ScoreListener pl);
+    void setScoreListener(ScoreListener sl);
 
     void setCellListener(CellListener cl);
 }
