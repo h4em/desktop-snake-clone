@@ -11,9 +11,9 @@ public class CellRenderer extends DefaultTableCellRenderer {
         if(cellValue == 0) {
             rendererComponent.setBackground(new Color(208, 208, 208));
         } else if(cellValue == 9) {
-            rendererComponent.setBackground(new Color(159, 5, 5));
+            rendererComponent.setBackground(new Color(248, 152, 29));
         } else {
-            rendererComponent.setBackground(new Color(5, 159, 5));
+            rendererComponent.setBackground(new Color(83, 130, 161));
         }
 
         rendererComponent.setForeground(rendererComponent.getBackground());

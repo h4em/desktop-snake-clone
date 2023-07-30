@@ -8,9 +8,10 @@ public class View extends JFrame implements GameStatusListener {
     private GameInterface game;
     public View(GameInterface game) {
         this.setTitle("desktop-snake-clone");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.setFocusable(true);
+        this.setResizable(false);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.game = game;
 

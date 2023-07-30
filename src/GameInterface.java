@@ -1,5 +1,4 @@
 public interface GameInterface {
-    Leaderboard getLeaderboard();
 
     void setSnakeDirection(int direction);
 

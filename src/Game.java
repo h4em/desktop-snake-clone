@@ -5,8 +5,6 @@ public class Game extends Thread implements GameInterface {
     private int[][] gameBoard;
     private int score;
     private Snake snake;
-    private Leaderboard leaderboard;
-
     public Game() {
         gameOver = false;
         score = 0;
@@ -65,11 +63,7 @@ public class Game extends Thread implements GameInterface {
     private void gameOver() {
         this.gameOver = true;
 
-        leaderboard = new Leaderboard();
-
         FileManager fm = new FileManager();
-        this.leaderboard.setPlayerList(fm.readPlayers());
-        fm.savePlayers(this.leaderboard.getPlayerList());
 
         fireGameEnded();
     }
@@ -172,9 +166,5 @@ public class Game extends Thread implements GameInterface {
     public void setPlayerListener(ScoreListener pl) {this.playerListener = pl;}
     private void fireScoreUpdated(int score){
         playerListener.scoreUpdated(score);
-    }
-    @Override
-    public Leaderboard getLeaderboard() {
-        return this.leaderboard;
     }
 }
