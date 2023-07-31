@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -14,7 +13,6 @@ public class Snake {
     private int maxBoardY;
 
     public Snake() {
-        direction = 0;
         snakeSegments = new LinkedList<>();
     }
 

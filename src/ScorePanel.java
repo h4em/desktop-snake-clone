@@ -8,6 +8,7 @@ public class ScorePanel extends JPanel implements ScoreListener {
 
     private JTextField highscoreField;
 
+    //TODO: zmienic fonta
     public ScorePanel() {
         this.setLayout(new GridBagLayout());
 
@@ -23,6 +24,8 @@ public class ScorePanel extends JPanel implements ScoreListener {
         this.add(new JLabel("Highscore: "), gbc);
 
         gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -38,8 +41,6 @@ public class ScorePanel extends JPanel implements ScoreListener {
         this.add(highscoreField, gbc);
 
         this.setColors();
-
-        this.setBorder();
     }
 
     //TODO: ten int newScore jest zly nie?
@@ -53,13 +54,8 @@ public class ScorePanel extends JPanel implements ScoreListener {
         ;
     }
 
-    private void setBorder() {
-        Border border = BorderFactory.createMatteBorder(0,0, 1, 0, Color.white);
-        this.setBorder(border);
-    }
-
     private void setColors() {
-        Color backgroundColor = new Color(208, 208, 208);
+        Color backgroundColor = Color.WHITE;
 
         this.setBackground(backgroundColor);
         this.highscoreField.setBackground(backgroundColor);

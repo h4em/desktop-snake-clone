@@ -9,7 +9,7 @@ public class CellRenderer extends DefaultTableCellRenderer {
 
         int cellValue = (int) value;
         if(cellValue == 0) {
-            rendererComponent.setBackground(new Color(208, 208, 208));
+            rendererComponent.setBackground(table.getGridColor());
         } else if(cellValue == 9) {
             rendererComponent.setBackground(new Color(248, 152, 29));
         } else {
@@ -21,3 +21,5 @@ public class CellRenderer extends DefaultTableCellRenderer {
         return rendererComponent;
     }
 }
+
+//TODO: zmienic kolor szarosci

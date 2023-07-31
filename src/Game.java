@@ -4,6 +4,7 @@ public class Game extends Thread implements GameInterface {
     private boolean gameOver;
     private int[][] gameBoard;
     private int score;
+    private int highscore;
     private Snake snake;
     public Game() {
         initBoard();

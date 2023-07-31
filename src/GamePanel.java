@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 
 public class GamePanel extends JPanel {
     public GamePanel(GameInterface game) {
@@ -10,10 +9,12 @@ public class GamePanel extends JPanel {
         game.setScoreListener((ScoreListener) scorePanel);
 
         //TODO: to samo
-        JTable gameTable = new GameTable(new SnakeGameModel());
+        JTable gameTable = new GameTable(new SnakeGameTableModel());
         game.setCellListener((CellListener) gameTable);
 
         this.add(scorePanel);
+
+        //TODO: Jtable jest komponentem gui, to model ma nasluchiwac na zmiany danych
         this.add(gameTable);
     }
 }
