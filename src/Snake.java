@@ -1,102 +1,95 @@
+import java.awt.*;
+import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Snake {
-    private Queue<int[]> snakeSegments;
-
-    private int[] head;
-    private int[] tail;
-
+public class Snake extends Thread implements Movable {
+    private Queue<Point> segments;
+    private Point head;
+    private Point tail;
     private int direction;
+    private int gameBoardBoundX;
+    private int gameBoardBoundY;
 
-    private int maxBoardX;
-    private int maxBoardY;
+    public Snake(AbstractTableModel gameTableModel, int startPosX, int startPosY) {
+        segments = new LinkedList<>();
+        gameBoardBoundX = gameTableModel.getRowCount();
+        gameBoardBoundY = gameTableModel.getColumnCount();
 
-    public Snake() {
-        snakeSegments = new LinkedList<>();
+        Point startSegment = new Point(startPosX, startPosY);
+        segments.add(startSegment);
+        head = tail = startSegment;
     }
 
-    public boolean move() {
-        int[] newSegment = new int[2];
+    private void tryMoving() {
+        Point newSegment = new Point();
 
         switch(direction) {
             //east
             case 1: {
-                newSegment = new int[]{head[0], head[1] + 1};
+                newSegment.setLocation(head.getX(), head.getY() + 1);
                 break;
             }
 
             //south
             case 2: {
-                newSegment = new int[] {head[0] + 1, head[1]};
+                newSegment.setLocation(head.getX() + 1, head.getY());
                 break;
             }
 
             //west
             case 3: {
-                newSegment = new int[] {head[0], head[1] - 1};
+                newSegment.setLocation(head.getX(), head.getY() - 1);
                 break;
             }
 
             //north
             case 4: {
-                newSegment = new int[] {head[0] - 1, head[1]};
+                newSegment.setLocation(head.getX() - 1, head.getY());
                 break;
             }
             default:
                 break;
         }
 
-        if(wallCollision(newSegment) || snakeCollision(newSegment))
-            return false;
+        if(wallCollision(newSegment) || snakeCollision(newSegment) {
+            //koniec
+        } else {
+            //sprawdz czy owoc, zajmij pole?
+        }
 
-        snakeSegments.add(newSegment);
+        segments.add(newSegment);
         head = newSegment;
-
-        return true;
     }
 
-    public void removeTail() {
-        snakeSegments.poll();
-        tail = snakeSegments.peek();
+    private void removeTail() {
+        segments.poll();
+        tail = segments.peek();
     }
 
-    public void initSnake(int[] head, int[] tail) {
-        this.head = head;
-        this.tail = tail;
-
-        snakeSegments.add(tail);
-        snakeSegments.add(head);
+    private boolean segmentsEqual(Point p1, Point p2) {
+        return (p1.getX() == p2.getX() && p1.getY() == p2.getY());
     }
 
-    public void setBoardBounds(int maxX, int maxY) {
-        this.maxBoardX = maxX;
-        this.maxBoardY = maxY;
-    }
-
-    private boolean segmentsEqual(int[] s1, int[] s2) {
-        return (s1[0] == s2[0] && s1[1] == s2[1]);
-    }
-
-    private boolean snakeCollision(int[] newSegment) {
-        for(int[] s : snakeSegments) {
-            if(segmentsEqual(s, newSegment))
+    private boolean snakeCollision(Point newSegment) {
+        for(Point p : segments) {
+            if(segmentsEqual(p, newSegment))
                 return true;
         }
         return false;
     }
 
-    private boolean wallCollision(int[] newSegment) {
-        if(newSegment[0] < 0 || newSegment[1] < 0)
+    private boolean wallCollision(Point newSegment) {
+        if(newSegment.getX() < 0 || newSegment.getY() < 0)
             return true;
-        if(newSegment[0] == maxBoardX || newSegment[1] == maxBoardY)
+        if(newSegment.getX() == gameBoardBoundX || newSegment.getY() == gameBoardBoundY)
             return true;
         return false;
     }
 
-    public boolean directionChangeAllowed(int newDirection) {
+    private boolean directionChangeAllowed(int newDirection) {
         switch(direction) {
-            case 0, 1: {
+            case 1: {
                 if(newDirection == 3)
                     return false;
                 break;
@@ -125,15 +118,19 @@ public class Snake {
         return direction != 0;
     }
 
-    public void setDirection(int direction) {
-        this.direction = direction;
+    @Override
+    public void setDirection(int newDirection) {
+        if(directionChangeAllowed(newDirection))
+            this.direction = newDirection;
     }
 
-    public int[] getHead() {
+    public Point getHead() {
         return this.head;
     }
 
-    public int[] getTail() {
+    public Point getTail() {
         return this.tail;
     }
+
+    public int getLength() {return segments.size();}
 }

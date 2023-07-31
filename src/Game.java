@@ -144,21 +144,6 @@ public class Game extends Thread implements GameInterface {
         res[2] = gameBoard[field[0]][field[1]];
         return res;
     }
-
-    private CellListener cellListener;
-    @Override
-    public void setCellListener(CellListener cl) {
-        this.cellListener = cl;
-
-        fireCellUpdated(makeCell(new int[] {12,4}));
-        fireCellUpdated(makeCell(new int[] {12,5}));
-        fireCellUpdated(makeCell(new int[] {12,10}));
-    }
-
-    private void fireCellUpdated(int[] cell) {
-        cellListener.cellValueUpdated(new CellEvent(cell));
-    }
-
     private ScoreListener scoreListener;
     @Override
     public void setScoreListener(ScoreListener sl) {this.scoreListener = sl;}

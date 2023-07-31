@@ -1,3 +1,3 @@
 public interface CellListener {
-    void cellValueUpdated(CellEvent evt);
+    void cellChanged(CellEvent e);
 }

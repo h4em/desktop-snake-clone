@@ -1,17 +1,18 @@
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import java.util.Arrays;
 
-public class SnakeGameTableModel extends AbstractTableModel implements TableModelListener {
+public class SnakeGameTableModel extends AbstractTableModel implements CellListener {
     private int[][] gameBoardData;
 
-    public SnakeGameTableModel() {
-        initBoard(25, 16);
+    public SnakeGameTableModel(int rowNumber, int colNumber) {
+        gameBoardData = new int[rowNumber][colNumber];
     }
 
     @Override
-    public void tableChanged(TableModelEvent e) {
-        ;
+    public void cellChanged(CellEvent e) {
+        Cell cell = (Cell) e.getSource();
+        setValueAt(cell.getValue(), cell.getX(), cell.getY());
+        fireTableDataChanged();
     }
 
     @Override
@@ -35,14 +36,6 @@ public class SnakeGameTableModel extends AbstractTableModel implements TableMode
     }
 
     public void clearBoard() {
-        for(int i = 0; i < gameBoardData.length; i++) {
-            for(int j = 0; j < gameBoardData[i].length; j++) {
-                gameBoardData[i][j] = 0;
-            }
-        }
-    }
-
-    private void initBoard(int rowNumber, int colNumber) {
-        gameBoardData = new int[rowNumber][colNumber];
+        Arrays.fill(gameBoardData, 0);
     }
 }
