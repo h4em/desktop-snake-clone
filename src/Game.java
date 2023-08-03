@@ -1,153 +1,128 @@
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.Queue;
 import java.util.Random;
 
-public class Game extends Thread implements GameInterface {
-    private boolean gameOver;
-    private int[][] gameBoard;
+public class Game extends Thread implements UserActionListener {
+    private Snake snake;
+    private Point fruit;
+    private FileManager fileManager;
     private int score;
     private int highscore;
-    private Snake snake;
-    public Game() {
-        initBoard();
+    private boolean gameOver;
 
-        snake = new Snake();
-        snake.initSnake(new int[] {12, 5}, new int[] {12,4});
-        snake.setBoardBounds(gameBoard.length, gameBoard[0].length);
+
+    //TODO: JEDNA GRA, wiele wezy.
+
+    //TODO:? jak bedziesz firerowal przed ustawieniem listenera to sie wyjebie wszystko.
+    public Game() {
+        //fileManager = new FileManager();
+        snake = new Snake(12, 10);
+
+        //highscore = fileManager.readHighscore();
+        //fireHighScoreUpdated(highscore);
+
+        score = snake.getLength();
+        //fireScoreUpdated(score);
+        //setSnakeField(snake.getHead());
+
+        fruit = new Point(12, 12);
+        //setFruitField(fruit);
 
         start();
     }
+    //thread .isAlive();
 
     @Override
     public void run() {
         while(!gameOver) {
-            synchronized (this) {
-                try {
-                    if(!snake.hasStarted()) {
-                        this.wait();
-                    }
-                } catch(InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            if(snake.isAlive()) {
 
-            tick();
-
-            try {
-                Thread.sleep(90);
-            } catch(InterruptedException e) {
-                e.printStackTrace();
             }
+            //fireSnakeCrashed();
+            //czekaj na response i wtedy albo terminate albo nowy snake;
         }
+        fileManager.saveScoreIfNewHighscore(score);
     }
 
     private void tick() {
-        if(snake.move()) {
-            takeField(snake.getHead());
-            fireCellUpdated(makeCell(snake.getHead()));
-        } else {
-            gameOver();
-        }
-
-        if(!checkForFruit()) {
-            spawnNewFruit();
-            fireCellUpdated(makeCell(getFieldOfFruit()));
-            fireScoreUpdated(++score);
-        } else {
-            freeField(snake.getTail());
-            fireCellUpdated(makeCell(snake.getTail()));
-            snake.removeTail();
-        }
-    }
-
-    private void gameOver() {
-        this.gameOver = true;
-
-        FileManager fm = new FileManager();
-
-        fireGameEnded();
-    }
-
-    @Override
-    public synchronized void setSnakeDirection(int direction) {
-        if(snake.directionChangeAllowed(direction)) {
-            if(!snake.hasStarted()) {
-                this.notify();
-            }
-            snake.setDirection(direction);
-        }
-    }
-
-    private boolean checkForFruit() {
-        for (int[] row : gameBoard) {
-            for (int cell : row)
-                if(cell == 9)
-                    return true;
-        }
-        return false;
-    }
-
-    private int[] getFieldOfFruit() {
-        int[] res = new int[2];
-        for(int i = 0; i < gameBoard.length; i++) {
-            for(int j = 0; j < gameBoard[i].length; j++) {
-                if(gameBoard[i][j] == 9) {
-                    res[0] = i;
-                    res[1] = j;
-                }
-            }
-        }
-        return res;
+        ;
     }
 
     private void spawnNewFruit() {
         Random random = new Random();
-        int row = random.nextInt(gameBoard.length);
-        int col = random.nextInt(gameBoard[0].length);
-        while(gameBoard[row][col] == 1) {
-            row = random.nextInt(gameBoard.length);
-            col = random.nextInt(gameBoard[0].length);
+        int row = random.nextInt(25);
+        int col = random.nextInt(16);
+        Point p = new Point(row, col);
+
+        Queue<Point> snakeSegments = snake.getSnakeSegments();
+
+        //ten .equals jest ciekawy
+        while(p.equals(snakeSegments.poll())) {
+            row = random.nextInt(25);
+            col = random.nextInt(16);
+            p = new Point(row, col);
         }
-        gameBoard[row][col] = 9;
+
+        setFruitField(p);
     }
 
-    private void takeField(int[] field) {
-        gameBoard[field[0]][field[1]] = 1;
+    //TODO: redundant, no?
+
+    private void setSnakeField(Point p) {
+        int x = (int) p.getX();
+        int y = (int) p.getY();
+        fireCellUpdated(new Cell(1, x, y));
     }
 
-    private void freeField(int[] field) {
-        gameBoard[field[0]][field[1]] = 0;
+    private void setFruitField(Point p) {
+        int x = (int) p.getX();
+        int y = (int) p.getY();
+        fireCellUpdated(new Cell(9, x, y));
     }
 
-    private void initBoard() {
-        gameBoard = new int[25][16];
-
-        gameBoard[12][4] = 1;
-        gameBoard[12][5] = 1;
-
-        gameBoard[12][10] = 9;
+    private void freeField(Point p) {
+        int x = (int) p.getX();
+        int y = (int) p.getY();
+        fireCellUpdated(new Cell(0, x, y));
     }
 
+    @Override
+    public void keyPressed(KeyEvent e) {
+        ;
+    }
+
+    @Override
+    public void retryButtonPressed() {
+        System.out.println("huj");
+    }
+
+    @Override
+    public void quitButtonPressed() {
+        ;
+    }
+
+    @Override
+    public void endingDialogClosed() {
+        ;
+    }
+
+    //TODO: te voidy?
     private GameStatusListener gameStatusListener;
-
-    @Override
-    public void setGameStatusListener(GameStatusListener gl) {
-        this.gameStatusListener = gl;
+    public void setGameStatusListener(GameStatusListener gsl) {
+        gameStatusListener = gsl;
     }
+    private void fireGameEnded() {gameStatusListener.gameEnded();};
 
-    private void fireGameEnded() {
-        gameStatusListener.gameEnded();
-    }
+    private CellListener cellListener;
+    public void setCellListener(CellListener cl) {this.cellListener = cl;}
+    private void fireCellUpdated(Cell cell){ cellListener.cellChanged(new CellEvent(cell));}
 
-    private int[] makeCell(int[] field) {
-        int[] res = new int[3];
-        res[0] = field[0];
-        res[1] = field[1];
-        res[2] = gameBoard[field[0]][field[1]];
-        return res;
-    }
+    //TODO: te inty???
     private ScoreListener scoreListener;
-    @Override
     public void setScoreListener(ScoreListener sl) {this.scoreListener = sl;}
     private void fireScoreUpdated(int score){
         scoreListener.scoreUpdated(score);
     }
+    private void fireHighScoreUpdated(int score) {scoreListener.highscoreUpdated(score);}
 }

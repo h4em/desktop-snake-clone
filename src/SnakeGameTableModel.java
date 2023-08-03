@@ -4,8 +4,8 @@ import java.util.Arrays;
 public class SnakeGameTableModel extends AbstractTableModel implements CellListener {
     private int[][] gameBoardData;
 
-    public SnakeGameTableModel(int rowNumber, int colNumber) {
-        gameBoardData = new int[rowNumber][colNumber];
+    public SnakeGameTableModel() {
+        gameBoardData = new int[25][16];
     }
 
     @Override
@@ -33,9 +33,5 @@ public class SnakeGameTableModel extends AbstractTableModel implements CellListe
     @Override
     public int getRowCount() {
         return gameBoardData.length;
-    }
-
-    public void clearBoard() {
-        Arrays.fill(gameBoardData, 0);
     }
 }

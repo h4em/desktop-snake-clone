@@ -18,10 +18,10 @@ public class ScorePanel extends JPanel implements ScoreListener {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        this.add(new JLabel("Score: "), gbc);
+        add(new JLabel("Score: "), gbc);
 
         gbc.gridy = 1;
-        this.add(new JLabel("Highscore: "), gbc);
+        add(new JLabel("Highscore: "), gbc);
 
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -32,15 +32,15 @@ public class ScorePanel extends JPanel implements ScoreListener {
         scoreField = new JTextField("0");
         scoreField.setEditable(false);
         scoreField.setBorder(BorderFactory.createEmptyBorder());
-        this.add(scoreField, gbc);
+        add(scoreField, gbc);
 
         gbc.gridy = 1;
         highscoreField = new JTextField("0");
         highscoreField.setEditable(false);
         highscoreField.setBorder(BorderFactory.createEmptyBorder());
-        this.add(highscoreField, gbc);
+        add(highscoreField, gbc);
 
-        this.setColors();
+        setColors();
     }
 
     //TODO: ten int newScore jest zly nie?
@@ -51,7 +51,7 @@ public class ScorePanel extends JPanel implements ScoreListener {
 
     @Override
     public void highscoreUpdated(int newScore) {
-        ;
+        highscoreField.setText("" + newScore);
     }
 
     private void setColors() {

@@ -1,26 +1,24 @@
 import java.awt.*;
-import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Snake extends Thread implements Movable {
-    private Queue<Point> segments;
+public class Snake extends Thread {
     private Point head;
     private Point tail;
+    private Queue<Point> segments;
     private int direction;
     private int gameBoardBoundX;
     private int gameBoardBoundY;
 
-    public Snake(AbstractTableModel gameTableModel, int startPosX, int startPosY) {
+    public Snake(int startPosX, int startPosY) {
         segments = new LinkedList<>();
-        gameBoardBoundX = gameTableModel.getRowCount();
-        gameBoardBoundY = gameTableModel.getColumnCount();
 
         Point startSegment = new Point(startPosX, startPosY);
         segments.add(startSegment);
         head = tail = startSegment;
     }
 
+    //TODO: wyjebac te setLocation
     private void tryMoving() {
         Point newSegment = new Point();
 
@@ -52,7 +50,7 @@ public class Snake extends Thread implements Movable {
                 break;
         }
 
-        if(wallCollision(newSegment) || snakeCollision(newSegment) {
+        if(wallCollision(newSegment) || snakeCollision(newSegment)) {
             //koniec
         } else {
             //sprawdz czy owoc, zajmij pole?
@@ -60,11 +58,6 @@ public class Snake extends Thread implements Movable {
 
         segments.add(newSegment);
         head = newSegment;
-    }
-
-    private void removeTail() {
-        segments.poll();
-        tail = segments.peek();
     }
 
     private boolean segmentsEqual(Point p1, Point p2) {
@@ -85,6 +78,10 @@ public class Snake extends Thread implements Movable {
         if(newSegment.getX() == gameBoardBoundX || newSegment.getY() == gameBoardBoundY)
             return true;
         return false;
+    }
+    public void setDirection(int newDirection) {
+        if(directionChangeAllowed(newDirection))
+            direction = newDirection;
     }
 
     private boolean directionChangeAllowed(int newDirection) {
@@ -114,14 +111,13 @@ public class Snake extends Thread implements Movable {
         return true;
     }
 
-    public boolean hasStarted() {
-        return direction != 0;
+    private void removeTail() {
+        segments.poll();
+        tail = segments.peek();
     }
 
-    @Override
-    public void setDirection(int newDirection) {
-        if(directionChangeAllowed(newDirection))
-            this.direction = newDirection;
+    public boolean hasStarted() {
+        return direction != 0;
     }
 
     public Point getHead() {
@@ -130,6 +126,10 @@ public class Snake extends Thread implements Movable {
 
     public Point getTail() {
         return this.tail;
+    }
+
+    public Queue<Point> getSnakeSegments() {
+        return segments;
     }
 
     public int getLength() {return segments.size();}

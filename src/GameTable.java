@@ -7,9 +7,10 @@ import java.awt.*;
 
 public class GameTable extends JTable implements TableModelListener {
     public GameTable(AbstractTableModel model) {
-        this.setModel(model);
-        this.setCellRenderers();
-        this.setEnabled(false);
+        setModel(model);
+        setEnabled(false);
+
+        setCellRenderers();
 
         setRowHeight(30);
         setColumnWidth(30);
