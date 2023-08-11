@@ -43,7 +43,7 @@ public class GameOverDialog extends JDialog implements GameStatusListener {
         jButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ;
+                userActionListener.retryButtonPressed();
             }
         });
 
@@ -54,7 +54,6 @@ public class GameOverDialog extends JDialog implements GameStatusListener {
     }
 
     public void setUserActionListener(UserActionListener ual) {userActionListener = ual;}
-
 
     @Override
     public void gameEnded() {

@@ -5,7 +5,9 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
 
-public class Frame extends JFrame {
+public
+    class Frame
+    extends JFrame {
     private GameTable gameTable;
     private SnakeGameTableModel gameTableModel;
     private ScorePanel scorePanel;
@@ -17,7 +19,7 @@ public class Frame extends JFrame {
         setTitle("desktop-snake-clone");
         setFocusable(true);
         setResizable(false);
-        setVisible(false);
+        setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
@@ -28,8 +30,8 @@ public class Frame extends JFrame {
         setKeyListener();
         setFocusListener();
     }
-
     public void show() {
+        validate();
         pack();
         setVisible(true);
         centerOnScreen();
@@ -42,7 +44,12 @@ public class Frame extends JFrame {
         return gameTableModel;
     }
     public GameStatusListener getGameStatusListener() {return gameOverDialog;}
-    public void setUserActionListener(UserActionListener uas) {userActionListener = uas;}
+
+    //TODO: czy nie slabe to jest?
+    public void setUserActionListener(UserActionListener ual) {
+        userActionListener = ual;
+        gameOverDialog.setUserActionListener(ual);
+    }
 
     //TODO: czy to jest wogole potrzebne?
     private void setFocusListener() {
@@ -71,7 +78,6 @@ public class Frame extends JFrame {
 
     private void setGameOverDialog() {
         gameOverDialog = new GameOverDialog(this);
-        gameOverDialog.setUserActionListener(userActionListener);
     }
 
     private void setScorePanel() {

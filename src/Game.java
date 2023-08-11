@@ -3,7 +3,10 @@ import java.awt.event.KeyEvent;
 import java.util.Queue;
 import java.util.Random;
 
-public class Game extends Thread implements UserActionListener {
+public
+    class Game
+    extends Thread
+    implements UserActionListener {
     private Snake snake;
     private Point fruit;
     private FileManager fileManager;
@@ -11,12 +14,21 @@ public class Game extends Thread implements UserActionListener {
     private int highscore;
     private boolean gameOver;
 
+    private void saveScoreIfNewHighscore() {
+        if(fileManager != null)
+            if(highscore > score)
+                fileManager.saveScore(highscore);
+    }
+
+
 
     //TODO: JEDNA GRA, wiele wezy.
 
     //TODO:? jak bedziesz firerowal przed ustawieniem listenera to sie wyjebie wszystko.
     public Game() {
-        //fileManager = new FileManager();
+        fileManager = new FileManager();
+        highscore = fileManager.readScore();
+        System.out.println(highscore);
         snake = new Snake(12, 10);
 
         //highscore = fileManager.readHighscore();
@@ -36,19 +48,16 @@ public class Game extends Thread implements UserActionListener {
     @Override
     public void run() {
         while(!gameOver) {
-            if(snake.isAlive()) {
-
+            while(snake.isAlive()) {
+                //snake.tryMoving();
+                //snake.wait();
             }
             //fireSnakeCrashed();
             //czekaj na response i wtedy albo terminate albo nowy snake;
         }
-        fileManager.saveScoreIfNewHighscore(score);
+        saveScoreIfNewHighscore();
+        //fireApplicationEnd?
     }
-
-    private void tick() {
-        ;
-    }
-
     private void spawnNewFruit() {
         Random random = new Random();
         int row = random.nextInt(25);
