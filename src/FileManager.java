@@ -3,9 +3,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
+//TODO: poczytac czy tutaj nie bedzie zle jak file atrybut i wogle
 public class FileManager {
     private final File file;
-
     public FileManager() {
         file = new File(".\\highscore.bin");
         if(!file.exists()) {
@@ -37,6 +38,7 @@ public class FileManager {
         }
         return result;
     }
+
     public void saveScore(int score) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -45,6 +47,7 @@ public class FileManager {
             ioe.printStackTrace();
         }
     }
+
     private int readIntFromBinaryStream(FileInputStream fis) throws IOException {
         int n = 0;
 

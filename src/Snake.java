@@ -1,87 +1,141 @@
 import java.awt.*;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Snake extends Thread {
+public
+    class Snake
+    extends Thread
+    implements GameEventListener {
     private Point head;
     private Point tail;
     private Queue<Point> segments;
     private int direction;
-    private int gameBoardBoundX;
-    private int gameBoardBoundY;
+    private boolean crashed;
+    private boolean eatenFruit;
 
     public Snake(int startPosX, int startPosY) {
-        segments = new LinkedList<>();
+        segments = new LinkedList<Point>();
 
         Point startSegment = new Point(startPosX, startPosY);
         segments.add(startSegment);
         head = tail = startSegment;
     }
 
-    //TODO: wyjebac te setLocation
-    private void tryMoving() {
-        Point newSegment = new Point();
+    @Override
+    public void run() {
+        while(!crashed) {
+            eatenFruit = false;
+            move();
+
+            if(collision()) {
+                crashed = true;
+            } else {
+                fireFieldTaken();
+            }
+
+            //ten delay jest tak dla pewnosci chyba, bug przy kolizji ci odejmie ogon ale to dobrze?
+            delay(90);
+
+            if(!eatenFruit) {
+                fireFieldFreed();
+                removeTail();
+            }
+        }
+        //fireSnakeCrashed();
+    }
+
+    private GameEventListener gameEventListener;
+
+    public void setGameEventListener(GameEventListener gel) {gameEventListener = gel;}
+
+    private void fireFieldTaken() {
+        gameEventListener.fieldTaken(head.x, head.y);
+    }
+
+    private void fireFieldFreed() {
+        gameEventListener.fieldFreed(tail.x, tail.y);
+    }
+
+    private void move() {
+        Point newHead = new Point();
 
         switch(direction) {
             //east
             case 1: {
-                newSegment.setLocation(head.getX(), head.getY() + 1);
+                newHead.x = head.x;
+                newHead.y = head.y + 1;
                 break;
             }
 
             //south
             case 2: {
-                newSegment.setLocation(head.getX() + 1, head.getY());
+                newHead.x = head.x + 1;
+                newHead.y = head.y;
                 break;
             }
 
             //west
             case 3: {
-                newSegment.setLocation(head.getX(), head.getY() - 1);
+                newHead.x = head.x;
+                newHead.y = head.y - 1;
                 break;
             }
 
             //north
             case 4: {
-                newSegment.setLocation(head.getX() - 1, head.getY());
+                newHead.x = head.x - 1;
+                newHead.y = head.y;
                 break;
             }
             default:
                 break;
         }
 
-        if(wallCollision(newSegment) || snakeCollision(newSegment)) {
-            //koniec
-        } else {
-            //sprawdz czy owoc, zajmij pole?
-        }
-
-        segments.add(newSegment);
-        head = newSegment;
+        addSnakeSegment(newHead);
+        updateHead(newHead);
     }
 
-    private boolean segmentsEqual(Point p1, Point p2) {
-        return (p1.getX() == p2.getX() && p1.getY() == p2.getY());
+    private boolean collision() {
+        return wallCollision() || selfCollision();
     }
 
-    private boolean snakeCollision(Point newSegment) {
-        for(Point p : segments) {
-            if(segmentsEqual(p, newSegment))
+    private boolean selfCollision() {
+        Iterator<Point> iterator = segments.iterator();
+        while(iterator.hasNext()) {
+            Point p = iterator.next();
+            if(!iterator.hasNext() && p.equals(head)) {
                 return true;
+            }
         }
         return false;
     }
 
-    private boolean wallCollision(Point newSegment) {
-        if(newSegment.getX() < 0 || newSegment.getY() < 0)
+    //publiczne atrybuty Point'a?
+    private boolean wallCollision() {
+        if(head.x < 0 || head.y < 0)
             return true;
-        if(newSegment.getX() == gameBoardBoundX || newSegment.getY() == gameBoardBoundY)
+        if(head.x == SnakeGameTableModel.gameBoardBoundX || head.y == SnakeGameTableModel.gameBoardBoundY)
             return true;
         return false;
     }
+
+    private void delay(long duration) {
+        try {
+            Thread.sleep(duration);
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setDirection(int newDirection) {
         if(directionChangeAllowed(newDirection))
             direction = newDirection;
+    }
+
+    @Override
+    public void fruitEaten() {
+        eatenFruit = true; //?
     }
 
     private boolean directionChangeAllowed(int newDirection) {
@@ -111,6 +165,14 @@ public class Snake extends Thread {
         return true;
     }
 
+    private void addSnakeSegment(Point segment){
+        segments.add(segment);
+    }
+
+    private void updateHead(Point newHead) {
+        head = newHead;
+    }
+
     private void removeTail() {
         segments.poll();
         tail = segments.peek();
@@ -128,9 +190,21 @@ public class Snake extends Thread {
         return this.tail;
     }
 
-    public Queue<Point> getSnakeSegments() {
-        return segments;
-    }
-
     public int getLength() {return segments.size();}
+    @Override
+    public void fieldFreed(int x, int y) {
+        ;
+    }
+    @Override
+    public void fieldTaken(int x, int y) {
+        ;
+    }
+    @Override
+    public void fruitSpawned(int x, int y) {
+        ;
+    }
+    @Override
+    public void newFruitRequest() {
+        ;
+    }
 }

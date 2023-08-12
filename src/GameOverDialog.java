@@ -3,9 +3,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GameOverDialog extends JDialog implements GameStatusListener {
+public
+    class GameOverDialog
+    extends JDialog
+    implements GameStatusListener {
     private UserActionListener userActionListener;
-
     public GameOverDialog(JFrame parentFrame) {
         setTitle("Game over!");
         setVisible(true);
@@ -19,8 +21,6 @@ public class GameOverDialog extends JDialog implements GameStatusListener {
 
         addQuitButton(gbc);
         addRetryButton(gbc);
-
-        pack();
     }
 
     private void addQuitButton(GridBagConstraints gbc) {
@@ -57,7 +57,7 @@ public class GameOverDialog extends JDialog implements GameStatusListener {
 
     @Override
     public void gameEnded() {
-
+        ;
     }
     //TODO: przy close operation niech sie zamyka wszystko, albo niech nie da sie zamknac.
 }

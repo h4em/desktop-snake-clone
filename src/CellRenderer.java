@@ -21,5 +21,3 @@ public class CellRenderer extends DefaultTableCellRenderer {
         return rendererComponent;
     }
 }
-
-//TODO: zmienic kolor szarosci

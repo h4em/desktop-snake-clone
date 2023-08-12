@@ -5,42 +5,63 @@ import java.awt.*;
 
 public class ScorePanel extends JPanel implements ScoreListener {
     private JTextField scoreField;
-
     private JTextField highscoreField;
 
-    //TODO: zmienic fonta
+    //TODO: zmiana fonta?
     public ScorePanel() {
-        this.setLayout(new GridBagLayout());
-
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-
         gbc.anchor = GridBagConstraints.WEST;
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        add(new JLabel("Score: "), gbc);
-
-        gbc.gridy = 1;
-        add(new JLabel("Highscore: "), gbc);
+        addScoreLabel(gbc);
+        addHighscoreLabel(gbc);
 
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        addScoreField(gbc);
+        addHighscoreField(gbc);
+
+        setColors();
+    }
+
+    private void addScoreLabel(GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(new JLabel("Score: "), gbc);
+    }
+
+    private void addHighscoreLabel(GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        add(new JLabel("Highscore: "), gbc);
+    }
+
+    private void addScoreField(GridBagConstraints gbc) {
         gbc.gridx = 1;
         gbc.gridy = 0;
         scoreField = new JTextField("0");
         scoreField.setEditable(false);
         scoreField.setBorder(BorderFactory.createEmptyBorder());
         add(scoreField, gbc);
+    }
 
+    private void addHighscoreField(GridBagConstraints gbc) {
+        gbc.gridx = 1;
         gbc.gridy = 1;
         highscoreField = new JTextField("0");
         highscoreField.setEditable(false);
         highscoreField.setBorder(BorderFactory.createEmptyBorder());
         add(highscoreField, gbc);
+    }
 
-        setColors();
+    private void setColors() {
+        Color backgroundColor = Color.WHITE;
+
+        this.setBackground(backgroundColor);
+        this.highscoreField.setBackground(backgroundColor);
+        this.scoreField.setBackground(backgroundColor);
     }
 
     //TODO: ten int newScore jest zly nie?
@@ -52,13 +73,5 @@ public class ScorePanel extends JPanel implements ScoreListener {
     @Override
     public void highscoreUpdated(int newScore) {
         highscoreField.setText("" + newScore);
-    }
-
-    private void setColors() {
-        Color backgroundColor = Color.WHITE;
-
-        this.setBackground(backgroundColor);
-        this.highscoreField.setBackground(backgroundColor);
-        this.scoreField.setBackground(backgroundColor);
     }
 }

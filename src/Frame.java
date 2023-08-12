@@ -40,7 +40,7 @@ public
     public ScoreListener getScoreListener() {
         return scorePanel;
     }
-    public CellListener getCellListener() {
+    public GameEventListener getGameEventListener() {
         return gameTableModel;
     }
     public GameStatusListener getGameStatusListener() {return gameOverDialog;}
