@@ -7,6 +7,7 @@ public class CellRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Component rendererComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
+        //TODO: casting na fieldFlag?
         int cellValue = (int) value;
         if(cellValue == 0) {
             rendererComponent.setBackground(table.getGridColor());

@@ -8,19 +8,24 @@ public
     extends JDialog
     implements GameStatusListener {
     private UserActionListener userActionListener;
+
+    //TODO: zamkniecie dialogu
     public GameOverDialog(JFrame parentFrame) {
         setTitle("Game over!");
-        setVisible(true);
         setResizable(false);
-        setLocationRelativeTo(parentFrame);
         setAlwaysOnTop(true);
 
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.anchor = GridBagConstraints.CENTER;
 
         addQuitButton(gbc);
         addRetryButton(gbc);
+
+        validate();
+        pack();
+        setLocationRelativeTo(parentFrame);
+        setVisible(true);
     }
 
     private void addQuitButton(GridBagConstraints gbc) {
@@ -28,12 +33,14 @@ public
         jButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //wyslij ze ma sie skonczyc?
+                userActionListener.quitButtonPressed();
             }
         });
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+
+        gbc.insets = new Insets(10, 10, 10, 0);
 
         add(jButton, gbc);
     }
@@ -49,6 +56,8 @@ public
 
         gbc.gridx = 1;
         gbc.gridy = 0;
+
+        gbc.insets = new Insets(10, 10, 10, 10);
 
         add(jButton, gbc);
     }

@@ -9,39 +9,56 @@ public
     class Frame
     extends JFrame {
     private GameTable gameTable;
-    private SnakeGameTableModel gameTableModel;
+    private GameTableModel gameTableModel;
     private ScorePanel scorePanel;
     private GameOverDialog gameOverDialog;
     private KeyAdapter keyAdapter;
     private UserActionListener userActionListener;
 
-    public Frame() {
-        setTitle("desktop-snake-clone");
-        setFocusable(true);
-        setResizable(false);
-        setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-
-        setScorePanel();
-        setGameTable();
-        setGameOverDialog();
-
-        setKeyListener();
-        setFocusListener();
+    public GameOverDialog getGameOverDialog() {
+        return gameOverDialog;
     }
-    public void show() {
-        validate();
-        pack();
-        setVisible(true);
-        centerOnScreen();
+
+    public boolean setupFinished() {
+        if(gameTable == null)
+            return false;
+        if(gameTableModel == null)
+            return false;
+        if(gameOverDialog == null)
+            return false;
+        return true;
+    }
+
+    public Frame() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                setTitle("Snake");
+                setFocusable(true);
+                setResizable(false);
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+
+                setScorePanel();
+                setGameTable();
+                setGameOverDialog();
+
+                setKeyListener();
+                setFocusListener();
+
+                validate();
+                pack();
+                centerOnScreen();
+                setVisible(true);
+            }
+        });
     }
 
     public ScoreListener getScoreListener() {
         return scorePanel;
     }
     public GameEventListener getGameEventListener() {
-        return gameTableModel;
+        return null;
     }
     public GameStatusListener getGameStatusListener() {return gameOverDialog;}
 
@@ -86,7 +103,7 @@ public
     }
 
     private void setGameTable() {
-        gameTableModel = new SnakeGameTableModel();
+        gameTableModel = new GameTableModel();
         gameTable = new GameTable(gameTableModel);
         getContentPane().add(gameTable);
     }

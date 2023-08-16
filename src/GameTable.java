@@ -15,7 +15,7 @@ public class GameTable extends JTable implements TableModelListener {
         setRowHeight(30);
         setColumnWidth(30);
 
-        setBackgroundColor(208, 208, 208);
+        setBackgroundColor(238, 238, 238);
     }
 
     private void setCellRenderers() {

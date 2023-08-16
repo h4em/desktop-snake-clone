@@ -4,207 +4,109 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public
-    class Snake
-    extends Thread
-    implements GameEventListener {
-    private Point head;
-    private Point tail;
-    private Queue<Point> segments;
-    private int direction;
+    class Snake {
+    private Field head;
+    private Field tail;
+    private Queue<Field> segments;
+    private Direction direction;
     private boolean crashed;
-    private boolean eatenFruit;
 
-    public Snake(int startPosX, int startPosY) {
-        segments = new LinkedList<Point>();
-
-        Point startSegment = new Point(startPosX, startPosY);
-        segments.add(startSegment);
-        head = tail = startSegment;
+    public Snake() {
+        segments = new LinkedList<Field>();
     }
 
-    @Override
-    public void run() {
-        while(!crashed) {
-            eatenFruit = false;
-            move();
-
-            if(collision()) {
-                crashed = true;
-            } else {
-                fireFieldTaken();
-            }
-
-            //ten delay jest tak dla pewnosci chyba, bug przy kolizji ci odejmie ogon ale to dobrze?
-            delay(90);
-
-            if(!eatenFruit) {
-                fireFieldFreed();
-                removeTail();
-            }
-        }
-        //fireSnakeCrashed();
-    }
-
-    private GameEventListener gameEventListener;
-
-    public void setGameEventListener(GameEventListener gel) {gameEventListener = gel;}
-
-    private void fireFieldTaken() {
-        gameEventListener.fieldTaken(head.x, head.y);
-    }
-
-    private void fireFieldFreed() {
-        gameEventListener.fieldFreed(tail.x, tail.y);
-    }
-
-    private void move() {
-        Point newHead = new Point();
-
-        switch(direction) {
-            //east
-            case 1: {
-                newHead.x = head.x;
-                newHead.y = head.y + 1;
-                break;
-            }
-
-            //south
-            case 2: {
-                newHead.x = head.x + 1;
-                newHead.y = head.y;
-                break;
-            }
-
-            //west
-            case 3: {
-                newHead.x = head.x;
-                newHead.y = head.y - 1;
-                break;
-            }
-
-            //north
-            case 4: {
-                newHead.x = head.x - 1;
-                newHead.y = head.y;
-                break;
-            }
-            default:
-                break;
-        }
+    public void move() {
+        Field newHead = calculateNewHead();
 
         addSnakeSegment(newHead);
-        updateHead(newHead);
+        head = newHead;
     }
 
-    private boolean collision() {
+    private Field calculateNewHead() {
+        int x = head.x;
+        int y = head.y;
+
+        Field result = switch(direction) {
+            case UP -> new Field(x + 1, y);
+            case DOWN -> new Field(x - 1, y);
+            case LEFT -> new Field(x, y - 1);
+            case RIGHT -> new Field(x, y + 1);
+            default -> null;
+        };
+
+        return result;
+    }
+
+    public boolean hasCollided() {
         return wallCollision() || selfCollision();
     }
 
     private boolean selfCollision() {
-        Iterator<Point> iterator = segments.iterator();
+        Iterator<Field> iterator = segments.iterator();
         while(iterator.hasNext()) {
-            Point p = iterator.next();
+            Field p = iterator.next();
             if(!iterator.hasNext() && p.equals(head)) {
+                crashed = true;
                 return true;
             }
         }
         return false;
     }
 
-    //publiczne atrybuty Point'a?
+    //publiczne atrybuty Field'a?
     private boolean wallCollision() {
-        if(head.x < 0 || head.y < 0)
+        if(head.x < 0 || head.y < 0) {
+            crashed = true;
             return true;
-        if(head.x == SnakeGameTableModel.gameBoardBoundX || head.y == SnakeGameTableModel.gameBoardBoundY)
+        }
+        if(head.x == Game.gameBoardBoundX || head.y == Game.gameBoardBoundY) {
+            crashed = true;
             return true;
+        }
         return false;
     }
 
-    private void delay(long duration) {
-        try {
-            Thread.sleep(duration);
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setDirection(int newDirection) {
+    public void setDirection(Direction newDirection) {
         if(directionChangeAllowed(newDirection))
             direction = newDirection;
     }
 
-    @Override
-    public void fruitEaten() {
-        eatenFruit = true; //?
+    private boolean directionChangeAllowed(Direction newDirection) {
+        return !Direction.areOpposite(direction, newDirection);
     }
 
-    private boolean directionChangeAllowed(int newDirection) {
-        switch(direction) {
-            case 1: {
-                if(newDirection == 3)
-                    return false;
-                break;
-            }
-            case 2: {
-                if(newDirection == 4)
-                    return false;
-                break;
-            }
-            case 3: {
-                if(newDirection == 1)
-                    return false;
-                break;
-            }
-            case 4: {
-                if(newDirection == 2)
-                    return false;
-                break;
-            }
-            default: break;
-        }
-        return true;
-    }
-
-    private void addSnakeSegment(Point segment){
-        segments.add(segment);
-    }
-
-    private void updateHead(Point newHead) {
-        head = newHead;
-    }
-
-    private void removeTail() {
+    public void removeTail() {
         segments.poll();
         tail = segments.peek();
     }
 
-    public boolean hasStarted() {
-        return direction != 0;
+    public boolean isAlive() {
+        return !crashed;
     }
 
-    public Point getHead() {
+    public boolean hasStarted() {
+        return direction != null;
+    }
+
+    public void addSnakeSegment(Field segment){
+        segments.add(segment);
+    }
+
+    public void setHead(Field head) {
+        this.head = head;
+    }
+
+    public void setTail(Field tail) {
+        this.tail = tail;
+    }
+
+    public Field getHead() {
         return this.head;
     }
 
-    public Point getTail() {
+    public Field getTail() {
         return this.tail;
     }
 
     public int getLength() {return segments.size();}
-    @Override
-    public void fieldFreed(int x, int y) {
-        ;
-    }
-    @Override
-    public void fieldTaken(int x, int y) {
-        ;
-    }
-    @Override
-    public void fruitSpawned(int x, int y) {
-        ;
-    }
-    @Override
-    public void newFruitRequest() {
-        ;
-    }
 }
