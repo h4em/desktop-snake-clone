@@ -3,9 +3,16 @@ import java.util.List;
 
 public class Gameboard {
     private int[][] gameBoard;
-
-    public Gameboard(int gameBoardBoundX, int gameBoardBoundY) {
+    public static final int gameBoardBoundX = 25;
+    public static final int gameBoardBoundY = 16;
+    public Gameboard() {
         gameBoard = new int[gameBoardBoundX][gameBoardBoundY];
+    }
+
+    public void init(Field snakeStartField, Field fruitStartField) {
+        clearBoard();
+        setField(snakeStartField, FieldFlag.SNAKE);
+        setField(fruitStartField, FieldFlag.FRUIT);
     }
 
     public List<Field> getFreeFields() {
@@ -42,11 +49,15 @@ public class Gameboard {
             case FRUIT -> gameBoard[x][y] = 9;
             case FREE -> gameBoard[x][y] = 0;
         }
+
+        //???
+        if(dataModelListener != null)
+            fireFieldChanged(field);
     }
 
-    public void freshBoard() {
-        for(int i = 0; i < gameBoard.length; i++) {
-            for (int j = 0; j < gameBoard[i].length; j++) {
+    public void clearBoard() {
+        for(int i = 0; i < gameBoardBoundX; i++) {
+            for (int j = 0; j < gameBoardBoundY; j++) {
                 gameBoard[i][j] = 0;
             }
         }
@@ -62,5 +73,19 @@ public class Gameboard {
 
     private boolean isFruit(int value) {
         return value == 9;
+    }
+
+    DataModelListener dataModelListener;
+
+    public void setDataModelListener(DataModelListener dml) {
+        dataModelListener = dml;
+    }
+
+    public void fireDataInitialised() {
+        dataModelListener.dataInitialised(new DataModelEvent(gameBoard));
+    }
+
+    public void fireFieldChanged(Field field) {
+        dataModelListener.fieldChanged(new DataModelEvent(field));
     }
 }

@@ -3,7 +3,9 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class ScorePanel extends JPanel implements ScoreListener {
+public
+    class ScorePanel
+    extends JPanel  {
     private JTextField scoreField;
     private JTextField highscoreField;
 
@@ -64,14 +66,10 @@ public class ScorePanel extends JPanel implements ScoreListener {
         this.scoreField.setBackground(backgroundColor);
     }
 
-    //TODO: ten int newScore jest zly nie?
-    @Override
-    public void scoreUpdated(int newScore) {
-        scoreField.setText("" + newScore);
+    public void setScore(String newScore) {
+        scoreField.setText(newScore);
     }
-
-    @Override
-    public void highscoreUpdated(int newScore) {
-        highscoreField.setText("" + newScore);
+    public void setHighscore(String newScore) {
+        highscoreField.setText(newScore);
     }
 }

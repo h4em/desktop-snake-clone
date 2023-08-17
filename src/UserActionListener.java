@@ -4,5 +4,4 @@ public interface UserActionListener {
     void keyPressed(KeyEvent e);
     void retryButtonPressed();
     void quitButtonPressed();
-    void endingDialogClosed();
 }

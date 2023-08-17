@@ -5,20 +5,16 @@ import java.awt.*;
 public class CellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        Component rendererComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        //TODO: casting na fieldFlag?
-        int cellValue = (int) value;
-        if(cellValue == 0) {
-            rendererComponent.setBackground(table.getGridColor());
-        } else if(cellValue == 9) {
-            rendererComponent.setBackground(new Color(248, 152, 29));
-        } else {
-            rendererComponent.setBackground(new Color(83, 130, 161));
+        switch ((int) value) {
+            case 0 -> component.setBackground(table.getGridColor());
+            case 1 -> component.setBackground(new Color(83, 130, 161));
+            case 9 -> component.setBackground(new Color(248, 152, 29));
         }
 
-        rendererComponent.setForeground(rendererComponent.getBackground());
+        component.setForeground(component.getBackground());
 
-        return rendererComponent;
+        return component;
     }
 }

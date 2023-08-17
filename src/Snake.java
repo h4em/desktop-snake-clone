@@ -15,11 +15,16 @@ public
         segments = new LinkedList<Field>();
     }
 
+    public void init(Field startField) {
+        addSnakeSegment(startField);
+        setHead(startField);
+        setTail(startField);
+    }
+
     public void move() {
         Field newHead = calculateNewHead();
-
         addSnakeSegment(newHead);
-        head = newHead;
+        setHead(newHead);
     }
 
     private Field calculateNewHead() {
@@ -27,8 +32,8 @@ public
         int y = head.y;
 
         Field result = switch(direction) {
-            case UP -> new Field(x + 1, y);
-            case DOWN -> new Field(x - 1, y);
+            case UP -> new Field(x - 1, y);
+            case DOWN -> new Field(x + 1, y);
             case LEFT -> new Field(x, y - 1);
             case RIGHT -> new Field(x, y + 1);
             default -> null;
@@ -41,15 +46,9 @@ public
         return wallCollision() || selfCollision();
     }
 
+    //TODO: zrobic
     private boolean selfCollision() {
-        Iterator<Field> iterator = segments.iterator();
-        while(iterator.hasNext()) {
-            Field p = iterator.next();
-            if(!iterator.hasNext() && p.equals(head)) {
-                crashed = true;
-                return true;
-            }
-        }
+        //ogar
         return false;
     }
 
@@ -59,7 +58,7 @@ public
             crashed = true;
             return true;
         }
-        if(head.x == Game.gameBoardBoundX || head.y == Game.gameBoardBoundY) {
+        if(head.x == Gameboard.gameBoardBoundX || head.y == Gameboard.gameBoardBoundY) {
             crashed = true;
             return true;
         }
@@ -107,6 +106,4 @@ public
     public Field getTail() {
         return this.tail;
     }
-
-    public int getLength() {return segments.size();}
 }

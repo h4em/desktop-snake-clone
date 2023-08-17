@@ -1,21 +1,20 @@
-import javax.swing.table.AbstractTableModel;
-
+import javax.swing.table.DefaultTableModel;
 public
     class GameTableModel
-    extends AbstractTableModel {
+    extends DefaultTableModel
+    implements DataModelListener {
     private int[][] gameBoardData;
 
-    //jak tu sie to jakos zainituje tak zeby nie bylo new keyword to nie bedzie duplikacji wtedy.
-    public GameTableModel() {
-        gameBoardData = new int[Game.gameBoardBoundX][Game.gameBoardBoundY];
+    @Override
+    public void dataInitialised(DataModelEvent e) {
+        gameBoardData = (int[][]) e.getSource();
+        fireTableDataChanged();
     }
 
-    //tu ten model bedzie musial chyba wystawiac jakas metode zeby sie zbindowac z actual modelem, to jest viewmodel tak naprawde.
-
-
-    //cos takiego?
-    public void setData(int[][] data) {
-        gameBoardData = data;
+    @Override
+    public void fieldChanged(DataModelEvent e) {
+        Field field = (Field) e.getSource();
+        fireTableCellUpdated(field.x, field.y);
     }
 
     @Override
@@ -24,17 +23,12 @@ public
     }
 
     @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        gameBoardData[rowIndex][columnIndex] = (int) aValue;
+    public int getRowCount() {
+        return Gameboard.gameBoardBoundX;
     }
 
     @Override
     public int getColumnCount() {
-        return gameBoardData[0].length;
-    }
-
-    @Override
-    public int getRowCount() {
-        return gameBoardData.length;
+        return Gameboard.gameBoardBoundY;
     }
 }

@@ -7,7 +7,8 @@ import javax.swing.*;
 
 public
     class Frame
-    extends JFrame {
+    extends JFrame
+    implements GameEventListener {
     private GameTable gameTable;
     private GameTableModel gameTableModel;
     private ScorePanel scorePanel;
@@ -15,16 +16,11 @@ public
     private KeyAdapter keyAdapter;
     private UserActionListener userActionListener;
 
-    public GameOverDialog getGameOverDialog() {
-        return gameOverDialog;
-    }
-
+    //TODO: settupable interface?
     public boolean setupFinished() {
         if(gameTable == null)
             return false;
         if(gameTableModel == null)
-            return false;
-        if(gameOverDialog == null)
             return false;
         return true;
     }
@@ -41,7 +37,6 @@ public
 
                 setScorePanel();
                 setGameTable();
-                setGameOverDialog();
 
                 setKeyListener();
                 setFocusListener();
@@ -52,20 +47,6 @@ public
                 setVisible(true);
             }
         });
-    }
-
-    public ScoreListener getScoreListener() {
-        return scorePanel;
-    }
-    public GameEventListener getGameEventListener() {
-        return null;
-    }
-    public GameStatusListener getGameStatusListener() {return gameOverDialog;}
-
-    //TODO: czy nie slabe to jest?
-    public void setUserActionListener(UserActionListener ual) {
-        userActionListener = ual;
-        gameOverDialog.setUserActionListener(ual);
     }
 
     //TODO: czy to jest wogole potrzebne?
@@ -83,6 +64,57 @@ public
         });
     }
 
+    @Override
+    public void gameEnded() {
+        ;
+    }
+
+    @Override
+    public void snakeCrashed() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                gameOverDialog = new GameOverDialog(Frame.this);
+                gameOverDialog.setUserActionListener(userActionListener);
+            }
+        });
+    }
+
+    @Override
+    public void scoreUpdated(GameEvent e) {
+        String newScore = (String) e.getSource();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                scorePanel.setScore(newScore);
+            }
+        });
+    }
+
+    @Override
+    public void highscoreUpdated(GameEvent e) {
+        String newScore = (String) e.getSource();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                scorePanel.setHighscore(newScore);
+            }
+        });
+    }
+
+    private void setGameTable() {
+        gameTableModel = new GameTableModel();
+        gameTable = new GameTable(gameTableModel);
+        gameTableModel.addTableModelListener(gameTable);
+
+        getContentPane().add(gameTable);
+    }
+
+    private void setScorePanel() {
+        scorePanel = new ScorePanel();
+        getContentPane().add(scorePanel);
+    }
+
     private void setKeyListener() {
         keyAdapter = new KeyAdapter() {
             @Override
@@ -93,19 +125,8 @@ public
         addKeyListener(keyAdapter);
     }
 
-    private void setGameOverDialog() {
-        gameOverDialog = new GameOverDialog(this);
-    }
-
-    private void setScorePanel() {
-        scorePanel = new ScorePanel();
-        getContentPane().add(scorePanel);
-    }
-
-    private void setGameTable() {
-        gameTableModel = new GameTableModel();
-        gameTable = new GameTable(gameTableModel);
-        getContentPane().add(gameTable);
+    public void setUserActionListener(UserActionListener userActionListener) {
+        this.userActionListener = userActionListener;
     }
 
     private void centerOnScreen() {
@@ -113,6 +134,10 @@ public
         int centerX = (screenSize.width - this.getWidth()) / 2;
         int centerY = (screenSize.height - this.getHeight()) / 2;
         setLocation(centerX, centerY - 30);
+    }
+
+    public GameTable getGameTable() {
+        return gameTable;
     }
 }
 

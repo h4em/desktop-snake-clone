@@ -1,7 +1,6 @@
 interface GameEventListener {
-    //snake -> model
-    void fieldTaken(int x, int y);
-    void fieldFreed(int x, int y);
-    void fruitSpawned(int x, int y);
-    //snakeCrashed? kto bedzie za ten event odpowiadal
+    void scoreUpdated(GameEvent e);
+    void highscoreUpdated(GameEvent e);
+    void snakeCrashed();
+    void gameEnded();
 }
