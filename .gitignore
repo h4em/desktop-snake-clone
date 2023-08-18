@@ -1,5 +1,5 @@
 .idea/
-.\META-INF\
+./META-INF/
 *.iml
-highscore.bin
-.gitignore
+.bin
+gitignore
