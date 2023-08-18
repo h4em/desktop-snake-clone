@@ -139,7 +139,7 @@ public
     //TODO: tu zawsze gra jest na holdzie wiec notify na obu przyciskach
     @Override
     public void retryButtonPressed() {
-        System.out.println("retry");
+        System.out.println("dupa");
     }
 
     @Override

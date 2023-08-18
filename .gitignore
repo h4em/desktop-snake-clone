@@ -1,4 +1,4 @@
-out/
 .idea/
+.META-INF/
 *.iml
-*.bin
+highscore.bin
