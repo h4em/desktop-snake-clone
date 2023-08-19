@@ -1,15 +1,9 @@
 import javax.swing.table.DefaultTableModel;
 public
-    class GameTableModel
+    class GameTableViewModel
     extends DefaultTableModel
     implements DataModelListener {
     private int[][] gameBoardData;
-
-    @Override
-    public void dataInitialised(DataModelEvent e) {
-        gameBoardData = (int[][]) e.getSource();
-        fireTableDataChanged();
-    }
 
     @Override
     public void fieldChanged(DataModelEvent e) {
@@ -21,14 +15,16 @@ public
     public Object getValueAt(int rowIndex, int columnIndex) {
         return gameBoardData[rowIndex][columnIndex];
     }
-
     @Override
     public int getRowCount() {
         return Gameboard.gameBoardBoundX;
     }
-
     @Override
     public int getColumnCount() {
         return Gameboard.gameBoardBoundY;
+    }
+
+    public void setGameBoardData(int[][] gameBoardData) {
+        this.gameBoardData = gameBoardData;
     }
 }

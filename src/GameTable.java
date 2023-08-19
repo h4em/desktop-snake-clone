@@ -1,11 +1,10 @@
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import java.awt.*;
 
 public class GameTable extends JTable implements TableModelListener {
-    public GameTable(GameTableModel model) {
+    public GameTable(GameTableViewModel model) {
         setModel(model);
         setEnabled(false);
 

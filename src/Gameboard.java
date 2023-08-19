@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Gameboard {
+public final class Gameboard {
     private int[][] gameBoard;
     public static final int gameBoardBoundX = 25;
     public static final int gameBoardBoundY = 16;
@@ -10,7 +10,6 @@ public class Gameboard {
     }
 
     public void init(Field snakeStartField, Field fruitStartField) {
-        clearBoard();
         setField(snakeStartField, FieldFlag.SNAKE);
         setField(fruitStartField, FieldFlag.FRUIT);
     }
@@ -50,8 +49,8 @@ public class Gameboard {
             case FREE -> gameBoard[x][y] = 0;
         }
 
-        //???
-        if(dataModelListener != null)
+
+       if(dataModelListener != null)
             fireFieldChanged(field);
     }
 
@@ -59,8 +58,14 @@ public class Gameboard {
         for(int i = 0; i < gameBoardBoundX; i++) {
             for (int j = 0; j < gameBoardBoundY; j++) {
                 gameBoard[i][j] = 0;
+                if(dataModelListener != null)
+                    fireFieldChanged(new Field(i, j));
             }
         }
+    }
+
+    public int[][] getGameBoard() {
+        return gameBoard;
     }
 
     private boolean isFree(int value) {
@@ -75,16 +80,10 @@ public class Gameboard {
         return value == 9;
     }
 
-    DataModelListener dataModelListener;
-
+    private DataModelListener dataModelListener;
     public void setDataModelListener(DataModelListener dml) {
         dataModelListener = dml;
     }
-
-    public void fireDataInitialised() {
-        dataModelListener.dataInitialised(new DataModelEvent(gameBoard));
-    }
-
     public void fireFieldChanged(Field field) {
         dataModelListener.fieldChanged(new DataModelEvent(field));
     }

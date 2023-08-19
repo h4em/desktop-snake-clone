@@ -42,7 +42,7 @@ public
         return result;
     }
 
-    public boolean hasCollided() {
+    public boolean collided() {
         return wallCollision() || selfCollision();
     }
 

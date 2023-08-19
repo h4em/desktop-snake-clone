@@ -11,15 +11,9 @@ public
     private int score;
     private int highscore;
     private boolean gameOver;
-    private boolean setupFinished;
-
-    public boolean setupFinished() {
-        return setupFinished;
-    }
-
     private void saveScoreIfNewHighscore() {
-        if(highscore > score)
-            fileManager.saveScore(highscore);
+        if(score > highscore)
+            fileManager.saveScore(score);
     }
 
     public Game() {
@@ -31,8 +25,6 @@ public
 
         init();
 
-        setupFinished = true;
-
         start();
     }
 
@@ -41,38 +33,46 @@ public
         Field fruitStartField = new Field(12, 10);
 
         snake.init(snakeStartField);
+
+        gameBoard.clearBoard();
         gameBoard.init(snakeStartField, fruitStartField);
     }
 
     @Override
     public void run() {
-        while(!gameOver) {
+        while (!gameOver) {
             while(snake.isAlive()) {
                 tick();
                 delay(90);
             }
             fireSnakeCrashed();
-            hold(); //notify na przyciskach
+            waitForUserAction();
         }
-        //saveScoreIfNewHighscore();
-        //fireApplicationEnd?
+        saveScoreIfNewHighscore();
+        fireGameEnded();
     }
 
-    private void tick() {
-        if(!snake.hasStarted()) {
-            hold();
-        }
+    private void tick()  {
+        if(!snake.hasStarted())
+            waitForUserAction();
 
         snake.move();
 
-        if(snake.hasCollided())
+        if(snake.collided())
             return;
 
-        //TODO: tu jest niby ten duzy gap ze sie trzeba domyslic ale chyba huj
+        //TODO: duzy gap ze sie trzeba domyslec ocb
         if(fruitEaten()) {
             score++;
-            spawnNewFruit();
             fireScoreUpdated();
+
+            spawnNewFruit();
+
+            if(score > highscore) {
+                highscore = score;
+                fireHighScoreUpdated();
+            }
+
         } else {
             gameBoard.setField(snake.getTail(), FieldFlag.FREE);
             snake.removeTail();
@@ -80,26 +80,22 @@ public
         gameBoard.setField(snake.getHead(), FieldFlag.SNAKE);
     }
 
-    private synchronized void hold() {
+    private synchronized void waitForUserAction() {
         try {
-            this.wait();
-        } catch(InterruptedException e) {
+            wait();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private synchronized void proceed() {
-        this.notify();
-    }
-
-    private boolean isOnHold() {
+    private boolean isWaiting() {
         return getState() == State.WAITING;
     }
 
-    private void delay(long duration) {
+    private void delay(long duration)  {
         try {
             Thread.sleep(duration);
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -121,13 +117,15 @@ public
         return random.nextInt(bound);
     }
 
-    //TODO: jest wogle jakis bug ze dwa razy sie klika?
     @Override
-    public void keyPressed(KeyEvent e) {
-        if(isOnHold())
-            proceed();
-
+    public synchronized void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
+
+        if(!isArrowKey(keyCode))
+            return;
+        if(isWaiting())
+            notify();
+
         switch (keyCode) {
             case KeyEvent.VK_UP -> snake.setDirection(Direction.UP);
             case KeyEvent.VK_DOWN -> snake.setDirection(Direction.DOWN);
@@ -136,15 +134,36 @@ public
         }
     }
 
-    //TODO: tu zawsze gra jest na holdzie wiec notify na obu przyciskach
-    @Override
-    public void retryButtonPressed() {
-        System.out.println("dupa");
+    private boolean isArrowKey(int keyCode) {
+        if(keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT)
+            return true;
+        return false;
     }
 
     @Override
-    public void quitButtonPressed() {
-        System.out.println("quit");
+    public synchronized void retryButtonPressed() {
+        if(isWaiting())
+            notify();
+        restart();
+    }
+
+    private void restart() {
+        score = 0;
+        fireScoreUpdated();
+        snake = new Snake();
+        init();
+    }
+
+    @Override
+    public synchronized void quitButtonPressed() {
+        if(isWaiting())
+            notify();
+        gameOver = true;
+        fireGameEnded();
+    }
+
+    public Gameboard getGameBoard() {
+        return gameBoard;
     }
 
     private GameEventListener gameEventListener;
@@ -155,7 +174,9 @@ public
         gameEventListener.scoreUpdated(new GameEvent(Integer.toString(score)));
     }
 
-    private void fireHighScoreUpdated() { gameEventListener.highscoreUpdated(new GameEvent(Integer.toString(highscore))); }
+    private void fireHighScoreUpdated() {
+        gameEventListener.highscoreUpdated(new GameEvent(Integer.toString(highscore)));
+    }
 
     private void fireSnakeCrashed() {
         gameEventListener.snakeCrashed();
@@ -163,9 +184,5 @@ public
 
     private void fireGameEnded() {
         gameEventListener.gameEnded();
-    }
-
-    public Gameboard getGameBoard() {
-        return gameBoard;
     }
 }

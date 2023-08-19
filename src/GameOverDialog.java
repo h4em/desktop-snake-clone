@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-
 public
     class GameOverDialog
     extends JDialog {
@@ -26,7 +25,7 @@ public
     private void addQuitButton(GridBagConstraints gbc) {
         JButton jButton = new JButton("Quit");
 
-        jButton.addActionListener(e -> userActionListener.quitButtonPressed());
+        jButton.addActionListener(e -> fireQuitButtonPressed());
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -39,7 +38,7 @@ public
     private void addRetryButton(GridBagConstraints gbc) {
         JButton jButton = new JButton("Retry");
 
-        jButton.addActionListener(e -> userActionListener.retryButtonPressed());
+        jButton.addActionListener(e -> fireRetryButtonPressed());
 
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -50,5 +49,16 @@ public
     }
 
     private UserActionListener userActionListener;
+
     public void setUserActionListener(UserActionListener userActionListener) {this.userActionListener = userActionListener;}
+
+    private void fireQuitButtonPressed() {
+        userActionListener.quitButtonPressed();
+        SwingUtilities.invokeLater(() -> dispose());
+    }
+
+    private void fireRetryButtonPressed() {
+        userActionListener.retryButtonPressed();
+        SwingUtilities.invokeLater(() -> dispose());
+    }
 }
