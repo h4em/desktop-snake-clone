@@ -1,4 +1,4 @@
-﻿## 🐍 desktop-snake-clone 🐍
+﻿# 🐍 desktop-snake-clone 🐍
 
 ### About
 This repo showcases my [Snake game](https://en.wikipedia.org/wiki/Snake_(video_game_genre)) implementation I did as one 
