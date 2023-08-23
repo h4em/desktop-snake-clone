@@ -16,7 +16,7 @@ Compile the project yourself and run it through your CLI/IDE or create .jar exec
 
 and run it by either double-clicking the icon or by:
 
-`C:\gsm> java -jar Snake.jar`
+`C:\snake> java -jar Snake.jar`
 
 Java's `jar.exe` utility is located in the JDK's `\bin` folder so make sure your system `PATH` variable includes it.
 
