@@ -2,5 +2,4 @@
 META-INF/
 *.iml
 *.bin
-gitignore
-*.class
+out/
