@@ -11,10 +11,6 @@ public
     private int score;
     private int highscore;
     private boolean gameOver;
-    private void saveScoreIfNewHighscore() {
-        if(score > highscore)
-            fileManager.saveScore(score);
-    }
 
     public Game() {
         fileManager = new FileManager();
@@ -154,6 +150,11 @@ public
         init();
     }
 
+    private void saveScoreIfNewHighscore() {
+        if(score >= highscore)
+            fileManager.saveScore(score);
+    }
+
     @Override
     public synchronized void quitButtonPressed() {
         if(isWaiting())
@@ -174,7 +175,7 @@ public
         gameEventListener.scoreUpdated(new GameEvent(Integer.toString(score)));
     }
 
-    private void fireHighScoreUpdated() {
+    public void fireHighScoreUpdated() {
         gameEventListener.highscoreUpdated(new GameEvent(Integer.toString(highscore)));
     }
 

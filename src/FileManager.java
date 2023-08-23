@@ -51,11 +51,10 @@ public class FileManager {
     private int readIntFromBinaryStream(FileInputStream fis) throws IOException {
         int n = 0;
 
-        n |= fis.read() << 24;
-        n |= fis.read() << 16;
-        n |= fis.read() << 8;
+        n |= (fis.read() << 24);
+        n |= (fis.read() << 16);
+        n |= (fis.read() << 8);
         n |= fis.read();
-
         return n;
     }
 

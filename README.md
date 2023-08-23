@@ -26,4 +26,4 @@ ensure separation between the game's GUI and internal logic modules.
 The communication between the two is done through events and according listeners.
 
 ## Preview
-//TODO: ogar
+![](res/preview.gif)

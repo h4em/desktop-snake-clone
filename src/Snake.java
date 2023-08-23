@@ -46,7 +46,7 @@ public
         return wallCollision() || selfCollision();
     }
 
-    //TODO: zrobic
+    //TODO: zrobic!!!
     private boolean selfCollision() {
         //ogar
         return false;

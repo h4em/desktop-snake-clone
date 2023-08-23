@@ -20,6 +20,7 @@ public class Binder  {
 
     private void setGameEventListener() {
         game.setGameEventListener(frame);
+        game.fireHighScoreUpdated();
     }
 
     private void setViewModelDataSource()  {
