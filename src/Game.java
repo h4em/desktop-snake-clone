@@ -54,8 +54,9 @@ public
 
         snake.move();
 
-        if(snake.collided())
+        if(snake.collided()) {
             return;
+        }
 
         //TODO: duzy gap ze sie trzeba domyslec ocb
         if(fruitEaten()) {

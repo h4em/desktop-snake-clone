@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -46,13 +47,20 @@ public
         return wallCollision() || selfCollision();
     }
 
-    //TODO: zrobic!!!
     private boolean selfCollision() {
-        //ogar
+        LinkedList<Field> lSegments =  (LinkedList<Field>) segments;
+
+        int first = lSegments.indexOf(head);
+        int last = lSegments.lastIndexOf(head);
+
+        if(first != last) {
+            crashed = true;
+            return true;
+        }
+
         return false;
     }
 
-    //publiczne atrybuty Field'a?
     private boolean wallCollision() {
         if(head.x < 0 || head.y < 0) {
             crashed = true;
