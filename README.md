@@ -12,7 +12,7 @@ giving the player option to play again or quit. Game keeps track of the player's
 ## Technology
 It's build in the Swing framework, and is based on MVVM design pattern to 
 ensure separation between the game's GUI and internal logic modules. 
-The communication between the two is done through events and according listeners.
+The communication between the two is done through events and event listeners.
 
 ## Preview
 ![](res/preview.gif)
