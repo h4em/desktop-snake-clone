@@ -15,4 +15,6 @@ ensure separation between the game's GUI and internal logic modules.
 The communication between the two is done through events and event listeners.
 
 ## Preview
-![](res/preview.gif)
+<p align="center">
+  <img src="res/preview.gif" alt="preview-gif">
+</p>
