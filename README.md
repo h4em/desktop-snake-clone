@@ -16,5 +16,5 @@ of my Java class assignments.
 
 ## Technology
 It's build in the Swing framework, and is based on MVC design pattern to 
-ensure separation between the game's GUI and internal logic modules. 
-The communication between the two is done through events and according listeners.
+ensure separation between the game's GUI and internal logic modules.
+The communication between the two is done through events and event listeners.
