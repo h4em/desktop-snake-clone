@@ -3,9 +3,7 @@
 > Desktop snake game clone.
 
 <p align="center">
-
-![](res/preview.gif)
-
+    <img src="res/preview.gif" alt="preview-gif">
 </p>
 
 ## About
