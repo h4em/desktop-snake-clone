@@ -2,7 +2,11 @@
 
 > Desktop snake game clone.
 
+<p align="center">
+
 ![](res/preview.gif)
+
+</p>
 
 ## About
 This repo showcases my [Snake game](https://en.wikipedia.org/wiki/Snake_(video_game_genre)) implementation I did as one 
